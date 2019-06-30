@@ -30,7 +30,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Updated June 16th, 2019.
+// Updated June 30th, 2019.
 
 class NoDeleteMessages {
   getName() {
@@ -43,7 +43,7 @@ class NoDeleteMessages {
     return 'Prevents the client from removing deleted messages and print edited messages (until restart).\nUse .NoDeleteMessages-deleted-message .markup to edit the CSS of deleted messages (and .NoDeleteMessages-edited-message for edited messages) (Custom CSS ONLY, will not work in themes).\n\nMy Discord server: https://join-nebula.surge.sh\nCreate an issue at https://github.com/Mega-Mewthree/BetterDiscordPlugins for support.';
   }
   getVersion() {
-    return "0.2.3";
+    return "0.2.4";
   }
   getAuthor() {
     return "Mega_Mewthree (original), ShiiroSan (edit logging)";
@@ -56,17 +56,18 @@ class NoDeleteMessages {
     this.deletedMessageAttribute = `data-${this.generateRandomString(33)}`;
     this.editedMessageAttribute = `data-${this.generateRandomString(32)}`;
     this.settings = {};
-    //this.savedMessages = [];
   }
   load() {}
   unload() {}
   start() {
     //TODO: Patch this
-    if (!global.ZeresPluginLibrary) return window.BdApi.alert("Library Missing",`The library plugin needed for ${this.getName()} is missing.\n\nPlease download ZeresPluginLibrary here: https://betterdiscord.net/ghdl?id=2252`);
+    if (!global.ZeresPluginLibrary) return window.BdApi.alert("Library Missing", `The library plugin needed for ${this.getName()} is missing.\n\nPlease download ZeresPluginLibrary here: https://betterdiscord.net/ghdl?id=2252`);
     if (window.ZeresPluginLibrary) this.initialize();
   }
   initialize() {
-    this.settings = BdApi.loadData("NoDeleteMessages", "settings") || {customCSS: ""};
+    this.settings = BdApi.loadData("NoDeleteMessages", "settings") || {
+      customCSS: ""
+    };
     ZeresPluginLibrary.PluginUpdater.checkForUpdate(this.getName(), this.getVersion(), `https://raw.githubusercontent.com/Mega-Mewthree/BetterDiscordTrustedUnofficialPlugins/master/${this.getName()}/${this.getName()}.plugin.js`);
     this.replaceCustomCSS();
 
@@ -88,7 +89,7 @@ class NoDeleteMessages {
     };
 
     BdApi.injectCSS(this.CSSID, `
-      [${this.deletedMessageAttribute}] .da-markup{
+      [${this.deletedMessageAttribute}] .da-markup {
         color: #F00 !important;
       }
       [${this.deletedMessageAttribute}]:not(:hover) img, [${this.deletedMessageAttribute}]:not(:hover) .mention, [${this.deletedMessageAttribute}]:not(:hover) .reactions, [${this.deletedMessageAttribute}]:not(:hover) a {
@@ -196,7 +197,7 @@ class NoDeleteMessages {
         }];
       } else {
         if (this.editedMessages[evt.message.channel_id][evt.message.id].length > 49) {
-          this.editedMessages[evt.message.id][evt.message.id].shift() //I think 50 edits is enough no?
+          this.editedMessages[evt.message.channel_id][evt.message.id].shift() //I think 50 edits is enough no?
         }
         this.editedMessages[evt.message.channel_id][evt.message.id].push({
           message: evt.message.content,
@@ -205,10 +206,7 @@ class NoDeleteMessages {
       }
       if (evt.message.channel_id === this.getCurrentChannelID()) this.updateEditedMessages();
       return true;
-    } /*else if (evt.type === "MESSAGE_CREATE") { // I won't do this
-      this.savedMessages.push(evt);
-    }*/
-
+    }
     return false;
   }
   observer({
@@ -218,7 +216,7 @@ class NoDeleteMessages {
     let change;
     while (len--) {
       change = addedNodes[len];
-      if (change.classList && change.classList.contains("da-messagesWrapper")) {
+      if (change.classList && (change.classList.contains("da-messagesWrapper") || change.classList.contains("da-chat")) || change.firstChild && change.firstChild.classList && change.firstChild.classList.contains("da-message")) {
         this.updateDeletedMessages();
         this.updateEditedMessages();
         break;
@@ -260,9 +258,7 @@ class NoDeleteMessages {
             var timeEdit = "";
             if (actualDate.toLocaleDateString() == messageEditDate.toLocaleDateString()) {
               timeEdit += "Today at"
-            }
-            else
-            {
+            } else {
               timeEdit += messageEditDate.toLocaleDateString();
             }
             timeEdit += " " + messageEditDate.toLocaleTimeString();
@@ -328,29 +324,39 @@ class NoDeleteMessages {
 
   getSettingsPanel() {
     if (!this.initialized) return;
-    this.settings = BdApi.loadData("NoDeleteMessages", "settings") || {customCSS: ""};
+    this.settings = BdApi.loadData("NoDeleteMessages", "settings") || {
+      customCSS: ""
+    };
     const panel = $("<form>").addClass("form").css("width", "100%");
-		if (this.initialized) this.generateSettings(panel);
-		return panel[0];
+    if (this.initialized) this.generateSettings(panel);
+    return panel[0];
   }
 
   generateSettings(panel) {
-    new window.ZeresPluginLibrary.Settings.SettingGroup("Configuration", {collapsible: false, shown: true, callback: () => {this.updateSettings();}}).appendTo(panel).append(
-      new window.ZeresPluginLibrary.Settings.Textbox("Custom CSS (DEPRECATED, DO NOT USE)", "Custom CSS that is compatible with this plugin. (DEPRECATED, DO NOT USE)", (this.settings && this.settings.customCSS) || "", val => {this.updateCustomCSS(val);})
-		);
+    new window.ZeresPluginLibrary.Settings.SettingGroup("Configuration", {
+      collapsible: false,
+      shown: true,
+      callback: () => {
+        this.updateSettings();
+      }
+    }).appendTo(panel).append(
+      new window.ZeresPluginLibrary.Settings.Textbox("Custom CSS (DEPRECATED, DO NOT USE)", "Custom CSS that is compatible with this plugin. (DEPRECATED, DO NOT USE)", (this.settings && this.settings.customCSS) || "", val => {
+        this.updateCustomCSS(val);
+      })
+    );
   }
 }
 
 /*
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEGTGecftnrhRz9oomf4qgY6FcSQsFAl0Gh3MACgkQf4qgY6Fc
-SQvxsAgA1RWTgi22LbW27/xoCigEM6STZZmHjaafpltYBNh0N4S5HKitRvXxq46z
-NzMjAnHjEZK0YAhO10gS7biTWhlU0pT2oMpzCGfAHx6LyPS84pgZOOV5cpNuOGbe
-8lmyzLXDAJsRTjF6NEYRAgB01rQidY9M+k1X35fKevqm9gNrGnQCez5YjTHkQnjy
-98QkNBpFBCjH4VmHdnScDEloRFnRKwcGzBj1pgH56zsCpfubXUiktLfDY8ipcB24
-3+Hn1L7yddRytO13svcfNWwCbyv9LTxRoYpzs4E6cjTe1Lk9C01qnvE8qzJ0XT6P
-MN1aHHWa6QF9O765ye5yrOaqNHnkMg==
-=AwN8
+iQEzBAEBCgAdFiEEGTGecftnrhRz9oomf4qgY6FcSQsFAl0YbT4ACgkQf4qgY6Fc
+SQurJAf9GiNymmz4b4XQExkc0kEg7Ob0EpeRi+X4vpczxLG3feWt6uS70F0LKA/g
+6WSDjwYMHYlZ5Zq+MB4WXkuX7vns8yXuV9+2F+o9tDGdtVYVYy1luw2ELN+2lUME
+DxkEg7sJ3IXbL0sxBsuN1DVtuMnJNyyv63hAsac59xpOr0ZFs6g0BuZVdqG71BZL
+Hoyjc0bDpn09rljK8dXjgTNkqFhChu5kkdEMEvfvIXSO28vQHY860vF2TbeL/Yt2
+Mk9NbbBhCGVNOtmFcJ3NjDoGsDsGOldvCukVfDJmy4TnP3Bj84KvNjCSefxZrMJB
+hkYUqZK1ObrMzt3mbYq/XuisfbvONA==
+=VRHn
 -----END PGP SIGNATURE-----
 */
