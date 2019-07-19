@@ -30,7 +30,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Updated June 30th, 2019.
+// Updated July 19th, 2019.
 
 class NoDeleteMessages {
   getName() {
@@ -43,7 +43,7 @@ class NoDeleteMessages {
     return 'Prevents the client from removing deleted messages and print edited messages (until restart).\nUse .NoDeleteMessages-deleted-message .markup to edit the CSS of deleted messages (and .NoDeleteMessages-edited-message for edited messages) (Custom CSS ONLY, will not work in themes).\n\nMy Discord server: https://join-nebula.surge.sh\nCreate an issue at https://github.com/Mega-Mewthree/BetterDiscordPlugins for support.';
   }
   getVersion() {
-    return "0.2.4";
+    return "0.2.5";
   }
   getAuthor() {
     return "Mega_Mewthree (original), ShiiroSan (edit logging)";
@@ -63,6 +63,30 @@ class NoDeleteMessages {
     //TODO: Patch this
     if (!global.ZeresPluginLibrary) return window.BdApi.alert("Library Missing", `The library plugin needed for ${this.getName()} is missing.\n\nPlease download ZeresPluginLibrary here: https://betterdiscord.net/ghdl?id=2252`);
     if (window.ZeresPluginLibrary) this.initialize();
+    try {
+      let _BDFDB = {};
+      Object.defineProperty(window, "BDFDB", {
+        configurable: false,
+        get() {
+          return _BDFDB;
+        },
+        set(value) {
+          _BDFDB = value;
+          Object.defineProperty(_BDFDB, "processMessage", {
+            configurable: false,
+            get() {
+              return () => {};
+            },
+            set(value) {
+              return value;
+            }
+          });
+          return _BDFDB;
+        }
+      });
+    } catch (e) {
+      console.log("Failed to patch BDFDB, already patched?");
+    }
   }
   initialize() {
     this.settings = BdApi.loadData("NoDeleteMessages", "settings") || {
@@ -350,13 +374,13 @@ class NoDeleteMessages {
 /*
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEGTGecftnrhRz9oomf4qgY6FcSQsFAl0YbT4ACgkQf4qgY6Fc
-SQurJAf9GiNymmz4b4XQExkc0kEg7Ob0EpeRi+X4vpczxLG3feWt6uS70F0LKA/g
-6WSDjwYMHYlZ5Zq+MB4WXkuX7vns8yXuV9+2F+o9tDGdtVYVYy1luw2ELN+2lUME
-DxkEg7sJ3IXbL0sxBsuN1DVtuMnJNyyv63hAsac59xpOr0ZFs6g0BuZVdqG71BZL
-Hoyjc0bDpn09rljK8dXjgTNkqFhChu5kkdEMEvfvIXSO28vQHY860vF2TbeL/Yt2
-Mk9NbbBhCGVNOtmFcJ3NjDoGsDsGOldvCukVfDJmy4TnP3Bj84KvNjCSefxZrMJB
-hkYUqZK1ObrMzt3mbYq/XuisfbvONA==
-=VRHn
+iQEzBAEBCgAdFiEEGTGecftnrhRz9oomf4qgY6FcSQsFAl0xdIIACgkQf4qgY6Fc
+SQtEPgf+LqE8Guaf6Gc+RI+IB7vJI50SoweR4uYxcHaDY83wrxumUik/QkPAnvuf
+34Idu2IiCo32iY57+T8mfK0t+1M76YB+RhWADs6t8Hv31i5OEQ6tuJE2i9FgqXqQ
+eRLff6MeFTAtBeqhP/kiRlDYqq/dXe3jcbqnY3crLxgb01A2iw911SjfhAA1isSR
+BMeAScWDUTv2RaWitVaC3dhuu/FSBzvb8HYdyoagUaPRqQiNwYkVyqFzD0NExEBk
+61wBqLXTs7ikePiJbg5CSpQI1b0/RXErkP//VATAsSAVNaHVXHlDGBS6ygm5FuJk
+nQT1j+bPKCBbZZpLXGvwO6FBI1NIMA==
+=ecqV
 -----END PGP SIGNATURE-----
 */
