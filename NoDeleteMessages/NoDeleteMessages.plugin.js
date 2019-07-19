@@ -43,7 +43,7 @@ class NoDeleteMessages {
     return 'Prevents the client from removing deleted messages and print edited messages (until restart).\nUse .NoDeleteMessages-deleted-message .markup to edit the CSS of deleted messages (and .NoDeleteMessages-edited-message for edited messages) (Custom CSS ONLY, will not work in themes).\n\nMy Discord server: https://join-nebula.surge.sh\nCreate an issue at https://github.com/Mega-Mewthree/BetterDiscordPlugins for support.';
   }
   getVersion() {
-    return "0.2.5";
+    return "0.2.6";
   }
   getAuthor() {
     return "Mega_Mewthree (original), ShiiroSan (edit logging)";
@@ -63,30 +63,22 @@ class NoDeleteMessages {
     //TODO: Patch this
     if (!global.ZeresPluginLibrary) return window.BdApi.alert("Library Missing", `The library plugin needed for ${this.getName()} is missing.\n\nPlease download ZeresPluginLibrary here: https://betterdiscord.net/ghdl?id=2252`);
     if (window.ZeresPluginLibrary) this.initialize();
-    try {
-      let _BDFDB = {};
-      Object.defineProperty(window, "BDFDB", {
-        configurable: false,
-        get() {
-          return _BDFDB;
-        },
-        set(value) {
-          _BDFDB = value;
-          Object.defineProperty(_BDFDB, "processMessage", {
-            configurable: false,
-            get() {
-              return () => {};
-            },
-            set(value) {
-              return value;
-            }
-          });
-          return _BDFDB;
-        }
-      });
-    } catch (e) {
-      console.log("Failed to patch BDFDB, already patched?");
-    }
+    const _addClass = window.HTMLElement.prototype.addClass;
+    window.HTMLElement.prototype.addClass = function (...args) {
+      args = args.filter(a => a !== "NoDeleteMessages-deleted-message" && a !== "NoDeleteMessages-edited-message");
+      return _addClass.apply(this, args);
+    };
+    const _add = window.DOMTokenList.prototype.add;
+    window.DOMTokenList.prototype.add = function (...args) {
+      args = args.filter(a => a !== "NoDeleteMessages-deleted-message" && a !== "NoDeleteMessages-edited-message");
+      return _add.apply(this, args);
+    };
+    const _removeAttribute = window.HTMLElement.prototype.removeAttribute;
+    window.HTMLElement.prototype.removeAttribute = function (...args) {
+      args = args.filter(a => !(/^data-[A-z0-9]{20,}$/.test(a)));
+      if (args.length === 0) return;
+      return _removeAttribute.apply(this, args);
+    };
   }
   initialize() {
     this.settings = BdApi.loadData("NoDeleteMessages", "settings") || {
@@ -121,6 +113,8 @@ class NoDeleteMessages {
       }
       [${this.deletedMessageAttribute}] img, [${this.deletedMessageAttribute}] .mention, [${this.deletedMessageAttribute}] .reactions, [${this.deletedMessageAttribute}] a {
         transition: filter 0.3s !important;
+        transform-origin: top left;
+        transform: translateZ(0) scale(1.1);
       }
       [${this.editedMessageAttribute}] > [${this.editedMessageAttribute}]:not(:last-child) > [${this.editedMessageAttribute}], :not([${this.editedMessageAttribute}]) > [${this.editedMessageAttribute}] {
         color: rgba(255, 255, 255, 0.5) !important;
@@ -374,13 +368,13 @@ class NoDeleteMessages {
 /*
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEGTGecftnrhRz9oomf4qgY6FcSQsFAl0xdIIACgkQf4qgY6Fc
-SQtEPgf+LqE8Guaf6Gc+RI+IB7vJI50SoweR4uYxcHaDY83wrxumUik/QkPAnvuf
-34Idu2IiCo32iY57+T8mfK0t+1M76YB+RhWADs6t8Hv31i5OEQ6tuJE2i9FgqXqQ
-eRLff6MeFTAtBeqhP/kiRlDYqq/dXe3jcbqnY3crLxgb01A2iw911SjfhAA1isSR
-BMeAScWDUTv2RaWitVaC3dhuu/FSBzvb8HYdyoagUaPRqQiNwYkVyqFzD0NExEBk
-61wBqLXTs7ikePiJbg5CSpQI1b0/RXErkP//VATAsSAVNaHVXHlDGBS6ygm5FuJk
-nQT1j+bPKCBbZZpLXGvwO6FBI1NIMA==
-=ecqV
+iQEzBAEBCgAdFiEEGTGecftnrhRz9oomf4qgY6FcSQsFAl0yRlsACgkQf4qgY6Fc
+SQtLGggA5WsD9te/OjzDnuyCSOLlDUwKlDnkK3feLj5kcTHdMei9N7JJpiGUcyM1
+ks6wV4cr35/nRm6Gf3SR1uEnuRCY35jCm7pZ9VbaddME62A7oZLTFemb833hAfNO
+0eb2AVQPIfnQVN6doUJqT3MdzHI7RZ98ZaCs1oYi72RkREGx/2uyB+a961WDjqj+
+mMk2wfBxA0tm2dnV2l9qfXXlbZOAE0chXWFRLHaFIL8muYY+KOPX2Bk+HlnTEEEl
+dlcM8Ji69TPhbVnCMV5sPETfStqVeq+ZGd8C4C6OIulfYNJtK8yPI2+5tCZjtwSk
+qrYFGNiX0unUQImfI7wHoCMeiyM/7w==
+=VTfO
 -----END PGP SIGNATURE-----
 */
