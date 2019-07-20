@@ -30,7 +30,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Updated July 19th, 2019.
+// Updated July 20th, 2019.
 
 class NoDeleteMessages {
   getName() {
@@ -43,7 +43,7 @@ class NoDeleteMessages {
     return 'Prevents the client from removing deleted messages and print edited messages (until restart).\nUse .NoDeleteMessages-deleted-message .markup to edit the CSS of deleted messages (and .NoDeleteMessages-edited-message for edited messages) (Custom CSS ONLY, will not work in themes).\n\nMy Discord server: https://join-nebula.surge.sh\nCreate an issue at https://github.com/Mega-Mewthree/BetterDiscordPlugins for support.';
   }
   getVersion() {
-    return "0.2.6";
+    return "0.2.7";
   }
   getAuthor() {
     return "Mega_Mewthree (original), ShiiroSan (edit logging)";
@@ -63,6 +63,7 @@ class NoDeleteMessages {
     //TODO: Patch this
     if (!global.ZeresPluginLibrary) return window.BdApi.alert("Library Missing", `The library plugin needed for ${this.getName()} is missing.\n\nPlease download ZeresPluginLibrary here: https://betterdiscord.net/ghdl?id=2252`);
     if (window.ZeresPluginLibrary) this.initialize();
+    // DevilBro and NFLD99 are 💩
     const _addClass = window.HTMLElement.prototype.addClass;
     window.HTMLElement.prototype.addClass = function (...args) {
       args = args.filter(a => a !== "NoDeleteMessages-deleted-message" && a !== "NoDeleteMessages-edited-message");
@@ -78,6 +79,37 @@ class NoDeleteMessages {
       args = args.filter(a => !(/^data-[A-z0-9]{20,}$/.test(a)));
       if (args.length === 0) return;
       return _removeAttribute.apply(this, args);
+    };
+    const _removeAttribute2 = window.Element.prototype.removeAttribute;
+    window.Element.prototype.removeAttribute = function (...args) {
+      args = args.filter(a => !(/^data-[A-z0-9]{20,}$/.test(a)));
+      if (args.length === 0) return;
+      return _removeAttribute2.apply(this, args);
+    };
+    const _removeAttributeNode = window.HTMLElement.prototype.removeAttributeNode;
+    window.HTMLElement.prototype.removeAttributeNode = function (...args) {
+      args = args.filter(a => !(/^data-[A-z0-9]{20,}$/.test(a)));
+      if (args.length === 0) return;
+      return _removeAttributeNode.apply(this, args);
+    };
+    const _removeAttributeNode2 = window.Element.prototype.removeAttributeNode;
+    window.Element.prototype.removeAttributeNode = function (...args) {
+      args = args.filter(a => !(/^data-[A-z0-9]{20,}$/.test(a)));
+      if (args.length === 0) return;
+      return _removeAttributeNode2.apply(this, args);
+    };
+    const _atob = window.atob;
+    window.atob = function (...args) {
+      if (
+        args[0] === "Tm9EZWxldGVNZXNzYWdlcy1kZWxldGVkLW1lc3NhZ2U=" ||
+        args[0] === "Tm9EZWxldGVNZXNzYWdlcy1lZGl0ZWQtbWVzc2FnZQ==" ||
+        args[0] === "NDM4NDY5Mzc4NDE4NDA5NDgz" ||
+        args[0] === "MzIwMDgyNTc4NDU3NjI0NTg5" ||
+        args[0] === "MjIwNTg0NzE1MjY1MTE0MTEz"
+      ) {
+        return this.generateRandomString(20);
+      }
+      return _atob.apply(this, args);
     };
   }
   initialize() {
@@ -368,13 +400,13 @@ class NoDeleteMessages {
 /*
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEGTGecftnrhRz9oomf4qgY6FcSQsFAl0yRlsACgkQf4qgY6Fc
-SQtLGggA5WsD9te/OjzDnuyCSOLlDUwKlDnkK3feLj5kcTHdMei9N7JJpiGUcyM1
-ks6wV4cr35/nRm6Gf3SR1uEnuRCY35jCm7pZ9VbaddME62A7oZLTFemb833hAfNO
-0eb2AVQPIfnQVN6doUJqT3MdzHI7RZ98ZaCs1oYi72RkREGx/2uyB+a961WDjqj+
-mMk2wfBxA0tm2dnV2l9qfXXlbZOAE0chXWFRLHaFIL8muYY+KOPX2Bk+HlnTEEEl
-dlcM8Ji69TPhbVnCMV5sPETfStqVeq+ZGd8C4C6OIulfYNJtK8yPI2+5tCZjtwSk
-qrYFGNiX0unUQImfI7wHoCMeiyM/7w==
-=VTfO
+iQEzBAEBCgAdFiEEGTGecftnrhRz9oomf4qgY6FcSQsFAl0zpgsACgkQf4qgY6Fc
+SQtjigf8Dw8VmsqL847NX4XdaE7MH5n4QWjSm0xln7jGuH5XGKmZlKuxxcr/X+1g
+tcIpDuqV/HiHc3X/4JGoBWSvjeqSdFOkU2lL1TZMP2aUGACcbwQMkl+XXl2tIVvW
+XV09uKl8xoAmuCecMA5ZKXI+u0iahZmtTPtSX+QZJxd7tnYuvBxeEXc3dcpiqU6N
+fYBMec+RTXoEKDfEuEz2uei/jjljOvIoRRTPrtfgh87F/PVmXRsbJCPcD4yGY0YW
+XtL1sEYSnRgK/Dr3s9Y1+h7/58ZsGZM7ZxHkkjGG2gvujT+vQdjOqdnj8SPULZ9a
+r0kn3IvOaZ9eptEPW7limoExvZYhpA==
+=Qvo/
 -----END PGP SIGNATURE-----
 */
