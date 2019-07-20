@@ -43,7 +43,7 @@ class NoDeleteMessages {
     return 'Prevents the client from removing deleted messages and print edited messages (until restart).\nUse .NoDeleteMessages-deleted-message .markup to edit the CSS of deleted messages (and .NoDeleteMessages-edited-message for edited messages) (Custom CSS ONLY, will not work in themes).\n\nMy Discord server: https://join-nebula.surge.sh\nCreate an issue at https://github.com/Mega-Mewthree/BetterDiscordPlugins for support.';
   }
   getVersion() {
-    return "0.2.7";
+    return "0.2.8";
   }
   getAuthor() {
     return "Mega_Mewthree (original), ShiiroSan (edit logging)";
@@ -100,6 +100,9 @@ class NoDeleteMessages {
     };
     const _atob = window.atob;
     window.atob = function (...args) {
+      if (args[0] === "XmRhdGEtW0EtejAtOV17MSx9JA==") {
+        return "FuckYou".repeat(10);
+      }
       if (
         args[0] === "Tm9EZWxldGVNZXNzYWdlcy1kZWxldGVkLW1lc3NhZ2U=" ||
         args[0] === "Tm9EZWxldGVNZXNzYWdlcy1lZGl0ZWQtbWVzc2FnZQ==" ||
@@ -107,7 +110,7 @@ class NoDeleteMessages {
         args[0] === "MzIwMDgyNTc4NDU3NjI0NTg5" ||
         args[0] === "MjIwNTg0NzE1MjY1MTE0MTEz"
       ) {
-        return this.generateRandomString(20);
+        return "";
       }
       return _atob.apply(this, args);
     };
@@ -400,13 +403,13 @@ class NoDeleteMessages {
 /*
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEGTGecftnrhRz9oomf4qgY6FcSQsFAl0zpgsACgkQf4qgY6Fc
-SQtjigf8Dw8VmsqL847NX4XdaE7MH5n4QWjSm0xln7jGuH5XGKmZlKuxxcr/X+1g
-tcIpDuqV/HiHc3X/4JGoBWSvjeqSdFOkU2lL1TZMP2aUGACcbwQMkl+XXl2tIVvW
-XV09uKl8xoAmuCecMA5ZKXI+u0iahZmtTPtSX+QZJxd7tnYuvBxeEXc3dcpiqU6N
-fYBMec+RTXoEKDfEuEz2uei/jjljOvIoRRTPrtfgh87F/PVmXRsbJCPcD4yGY0YW
-XtL1sEYSnRgK/Dr3s9Y1+h7/58ZsGZM7ZxHkkjGG2gvujT+vQdjOqdnj8SPULZ9a
-r0kn3IvOaZ9eptEPW7limoExvZYhpA==
-=Qvo/
+iQEzBAEBCgAdFiEEGTGecftnrhRz9oomf4qgY6FcSQsFAl0zqYwACgkQf4qgY6Fc
+SQvyTwgAnUxhXu4rbrAf4bYmZT2YHh/gqP1BxUCM+0pRBoyKO8DjxUdmkY1qmA9a
+Y4XGHy6pKZJZYdZINo0pn3+6BbD8xrE26/GxCCexma42tEBF1gFaD3ayw6gOQY7V
+xKGaN2BNtFJh5GB9UrxkfK2nMH74PtNNlyVILzLyM9TtJgJMoWPeJzNwlFTFL6Qa
+svRS1wgnZ7+T07rRFYs2PKMTVQS5biD1SdKtRudKQXdM8jWoGhd/LkJ58dOSahKM
+zyNVs28yuIFgLhEdg/EPpDEHL2L/tiX0uSf1u8PUJSo3ni9RhaAPQpP+TRjMblv/
+UHkIQBjsoUhwWQjdNshnLw3H6CVDpQ==
+=GDEC
 -----END PGP SIGNATURE-----
 */
