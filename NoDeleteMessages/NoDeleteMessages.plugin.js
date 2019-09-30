@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Updated July 22nd, 2019.
+// Updated Sept 30th, 2019.
 
 const symbols = {};
 
@@ -64,7 +64,7 @@ class NoDeleteMessages {
     return 'Prevents the client from removing deleted messages and print edited messages (until restart).\nUse .NoDeleteMessages-deleted-message .markup to edit the CSS of deleted messages (and .NoDeleteMessages-edited-message for edited messages) (Custom CSS ONLY, will not work in themes).\n\nMy Discord server: https://join-nebula.surge.sh\nCreate an issue at https://github.com/Mega-Mewthree/BetterDiscordPlugins for support.';
   }
   getVersion() {
-    return "0.2.10";
+    return "0.2.13";
   }
   getAuthor() {
     return "Mega_Mewthree (original), ShiiroSan (edit logging)";
@@ -113,24 +113,34 @@ class NoDeleteMessages {
     };
 
     BdApi.injectCSS(this[symbols.CSSID], `
-      [${this[symbols.deletedMessageAttribute]}] .da-markup, [${this[symbols.deletedMessageAttribute]}] [class ^= markup] {
+      [${this[symbols.deletedMessageAttribute]}] .da-markup 
+      {
         color: #F00 !important;
       }
-      [${this[symbols.deletedMessageAttribute]}]:not(:hover) img, [${this[symbols.deletedMessageAttribute]}]:not(:hover) .mention, [${this[symbols.deletedMessageAttribute]}]:not(:hover) .reactions, [${this[symbols.deletedMessageAttribute]}]:not(:hover) a {
+
+      [${this[symbols.deletedMessageAttribute]}]:not(:hover).mention, [${this[symbols.deletedMessageAttribute]}]:not(:hover) > [class ^= reactions], [${this[symbols.deletedMessageAttribute]}]:not(:hover) a {
         filter: grayscale(100%) !important;
       }
-      [${this[symbols.deletedMessageAttribute]}] img, [${this[symbols.deletedMessageAttribute]}] .mention, [${this[symbols.deletedMessageAttribute]}] .reactions, [${this[symbols.deletedMessageAttribute]}] a {
+
+      [${this[symbols.deletedMessageAttribute]}].mention, [${this[symbols.deletedMessageAttribute]}] > [class ^= reactions], [${this[symbols.deletedMessageAttribute]}] a 
+      {
         transition: filter 0.3s !important;
         transform-origin: top left;
-        transform: translateZ(0) scale(1.1);
       }
-      [${this[symbols.editedMessageAttribute]}] > [${this[symbols.editedMessageAttribute]}]:not(:last-child) > [${this[symbols.editedMessageAttribute]}], :not([${this[symbols.editedMessageAttribute]}]) > [${this[symbols.editedMessageAttribute]}] {
+
+      [${this[symbols.editedMessageAttribute]}] > [${this[symbols.editedMessageAttribute]}]:not(:last-child) > [class ^= markup],
+      :not([${this[symbols.editedMessageAttribute]}]) > [${this[symbols.editedMessageAttribute]}] 
+      {
         color: rgba(255, 255, 255, 0.5) !important;
       }
-      [${this[symbols.deletedMessageAttribute]}] :not([${this[symbols.editedMessageAttribute]}]) > [${this[symbols.editedMessageAttribute]}], [${this[symbols.deletedMessageAttribute]}] [${this[symbols.editedMessageAttribute]}] > [${this[symbols.editedMessageAttribute]}]:not(:last-child) > [${this[symbols.editedMessageAttribute]}] {
+
+      [${this[symbols.deletedMessageAttribute]}] :not([${this[symbols.editedMessageAttribute]}]) > [${this[symbols.editedMessageAttribute]}] > [${this[symbols.editedMessageAttribute]}]:not(:last-child) > [class^=markup], [${this[symbols.deletedMessageAttribute]}] :not([${this[symbols.editedMessageAttribute]}]) > [${this[symbols.editedMessageAttribute]}][class^=markup]
+      {
         color: rgba(240, 71, 71, 0.5) !important;
       }
-      [${this[symbols.deletedMessageAttribute]}] [${this[symbols.editedMessageAttribute]}] > [${this[symbols.editedMessageAttribute]}]:last-child > [${this[symbols.editedMessageAttribute]}] {
+
+      [${this[symbols.deletedMessageAttribute]}] > [${this[symbols.editedMessageAttribute]}] > [${this[symbols.editedMessageAttribute]}]:last-child > [class^=markup] 
+      {
         color: #F00 !important;
       }
     `);
@@ -249,7 +259,7 @@ class NoDeleteMessages {
     let change;
     while (len--) {
       change = addedNodes[len];
-      if (change.classList && (change.classList.contains("da-messagesWrapper") || change.classList.contains("da-chat")) || change.firstChild && change.firstChild.classList && change.firstChild.classList.contains("da-message")) {
+      if (change.classList && (change.classList.contains("da-chatContent") || change.classList.contains("da-messagesWrapper") || change.classList.contains("da-chat")) || change.firstChild && change.firstChild.classList && change.firstChild.classList.contains("da-message")) {
         this[symbols.updateDeletedMessages]();
         this[symbols.updateEditedMessages]();
         break;
@@ -259,11 +269,14 @@ class NoDeleteMessages {
   [symbols.updateDeletedMessages]() {
     const channelDeletedMessages = this[symbols.deletedMessages][this[symbols.getCurrentChannelID]()];
     if (!channelDeletedMessages) return;
-    $(".da-message").each((index, elem) => {
+    $(".da-content").each((index, elem) => {
       try {
         const messageID = ZeresPluginLibrary.ReactTools.getOwnerInstance(elem).props.message.id;
         if (channelDeletedMessages.includes(messageID)) {
           elem.setAttribute(this[symbols.deletedMessageAttribute], "");
+          for (let index = 0; index < elem.children.length; index++) {
+            elem.children[index].setAttribute(this[symbols.deletedMessageAttribute], "");
+          }
         }
       } catch (e) {}
     });
@@ -319,7 +332,6 @@ class NoDeleteMessages {
           [this[symbols.editedMessageAttribute]]: true
         },
         parserForFunc.parse(content),
-        //TODO: Find a way to implement display time of edit
         createElementFunc.createElement("time", {
             className: editedClassName + " da-edited",
             role: "note"
