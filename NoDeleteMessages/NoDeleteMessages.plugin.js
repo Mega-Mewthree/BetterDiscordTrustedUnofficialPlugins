@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Updated Sept 30th, 2019.
+// Updated Oct 18th, 2019.
 
 const symbols = {};
 
@@ -323,7 +323,6 @@ class NoDeleteMessages {
 
     const renderFunc = this[symbols.findModule]("render");
     const createElementFunc = this[symbols.findModule]("createElement");
-    const parserForFunc = this[symbols.findModule](["parserFor", "parse"]);
     const editedClassName = this[symbols.findModule]("edited")["edited"].split(" ")[0];
 
     renderFunc.render(
@@ -331,12 +330,12 @@ class NoDeleteMessages {
           className: this[symbols.findModule]("markup")["markup"].split(" ")[0],
           [this[symbols.editedMessageAttribute]]: true
         },
-        parserForFunc.parse(content),
+        content,
         createElementFunc.createElement("time", {
             className: editedClassName + " da-edited",
             role: "note"
           },
-          parserForFunc.parse("(edited)")
+          "(edited)"
         )
       ),
       editText
