@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Updated Oct 18th, 2019.
+// Updated Oct 21st, 2019.
 
 const symbols = {};
 
@@ -64,7 +64,7 @@ class NoDeleteMessages {
     return 'Prevents the client from removing deleted messages and print edited messages (until restart).\nUse .NoDeleteMessages-deleted-message .markup to edit the CSS of deleted messages (and .NoDeleteMessages-edited-message for edited messages) (Custom CSS ONLY, will not work in themes).\n\nMy Discord server: https://join-nebula.surge.sh\nCreate an issue at https://github.com/Mega-Mewthree/BetterDiscordPlugins for support.';
   }
   getVersion() {
-    return "0.2.14";
+    return "0.2.15";
   }
   getAuthor() {
     return "Mega_Mewthree (original), ShiiroSan (edit logging)";
@@ -118,7 +118,7 @@ class NoDeleteMessages {
         color: #F00 !important;
       }
 
-      [${this[symbols.deletedMessageAttribute]}]:not(:hover).mention, [${this[symbols.deletedMessageAttribute]}]:not(:hover) > [class ^= reactions], [${this[symbols.deletedMessageAttribute]}]:not(:hover) a {
+      [${this[symbols.deletedMessageAttribute]}]:not(:hover).mention, [${this[symbols.deletedMessageAttribute]}]:not(:hover) > [class ^= reactions], [${this[symbols.deletedMessageAttribute]}]:not(:hover) a, [${this[symbols.deletedMessageAttribute]}]:not(:hover) img {
         filter: grayscale(100%) !important;
       }
 
@@ -129,7 +129,7 @@ class NoDeleteMessages {
       }
 
       [${this[symbols.editedMessageAttribute]}] > [${this[symbols.editedMessageAttribute]}]:not(:last-child) > [class ^= markup],
-      :not([${this[symbols.editedMessageAttribute]}]) > [${this[symbols.editedMessageAttribute]}] 
+      :not([${this[symbols.editedMessageAttribute]}]) > [${this[symbols.editedMessageAttribute]}]
       {
         color: rgba(255, 255, 255, 0.5) !important;
       }
@@ -298,7 +298,12 @@ class NoDeleteMessages {
           for (let i = 0; i < edited.length; i++) {
             const elementEdited = this[symbols.showEdited](edited[i].message);
 
-            var timeElement = elementEdited.children[0].children[0];
+            var timeElement = null;
+            for (let i = 0; i < elementEdited.children[0].children.length; i++) {
+              if (elementEdited.children[0].children[i].tagName.toLowerCase() === 'time') {
+              timeElement = elementEdited.children[0].children[i];
+             }
+            }
             var actualDate = new Date();
             var messageEditDate = new Date(edited[i].dateTime);
             var timeEdit = "";
@@ -323,6 +328,7 @@ class NoDeleteMessages {
 
     const renderFunc = this[symbols.findModule]("render");
     const createElementFunc = this[symbols.findModule]("createElement");
+    const parserForFunc = this[symbols.findModule](["astParserFor", "parse"]);
     const editedClassName = this[symbols.findModule]("edited")["edited"].split(" ")[0];
 
     renderFunc.render(
@@ -330,12 +336,12 @@ class NoDeleteMessages {
           className: this[symbols.findModule]("markup")["markup"].split(" ")[0],
           [this[symbols.editedMessageAttribute]]: true
         },
-        content,
+        parserForFunc.parse(content),
         createElementFunc.createElement("time", {
             className: editedClassName + " da-edited",
             role: "note"
           },
-          "(edited)"
+          parserForFunc.parse("(edited)")
         )
       ),
       editText
