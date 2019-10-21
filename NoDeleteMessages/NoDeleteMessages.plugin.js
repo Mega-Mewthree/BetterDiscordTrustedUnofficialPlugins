@@ -122,7 +122,7 @@ class NoDeleteMessages {
         filter: grayscale(100%) !important;
       }
 
-      [${this[symbols.deletedMessageAttribute]}].mention, [${this[symbols.deletedMessageAttribute]}] > [class ^= reactions], [${this[symbols.deletedMessageAttribute]}] a 
+      [${this[symbols.deletedMessageAttribute]}].mention, [${this[symbols.deletedMessageAttribute]}] > [class ^= reactions], [${this[symbols.deletedMessageAttribute]}] a, [${this[symbols.deletedMessageAttribute]}] img 
       {
         transition: filter 0.3s !important;
         transform-origin: top left;
