@@ -33,7 +33,6 @@ const symbols = {};
 [
   "deletedMessages",
   "editedMessages",
-  "fakePluginName",
   "CSSID",
   "customCSSID",
   "deletedMessageAttribute",
